@@ -14,7 +14,7 @@ class ImageGallery extends Component {
     images: null,
     showModal: false,
     error: null,
-    page: 1,
+    // page: 1,
     largeImage: '',
     status: 'idle',
   };
@@ -22,17 +22,17 @@ class ImageGallery extends Component {
   componentDidUpdate(prevProps, prevState) {
     const prevImageName = prevProps.imageName;
     const nextImageName = this.props.imageName;
-    const page = this.state.page;
+    const page = this.props.page;
 
     if (prevImageName !== nextImageName) {
-      this.setState({ status: 'pending', page: 1 });
+      this.setState({ status: 'pending' });
 
       fetchImages(nextImageName, page)
         .then(data => data.hits)
         .then(images => this.setState({ images, status: 'resolved' }))
         .catch(error => this.setState({ error, status: 'rejected' }));
     }
-    if (this.state.page !== prevState.page) {
+    if (page !== prevProps.page && page !== 1) {
       fetchImages(nextImageName, page)
         .then(data => data.hits)
         .then(images =>
@@ -54,10 +54,6 @@ class ImageGallery extends Component {
       largeImage: findImage.largeImageURL,
     });
     this.toggleModal();
-  };
-
-  onClickLoadMore = () => {
-    this.setState(prevState => ({ page: prevState.page + 1 }));
   };
 
   toggleModal = () => {
@@ -87,7 +83,7 @@ class ImageGallery extends Component {
               />
             ))}
           </ul>
-          {<Button onClick={this.onClickLoadMore} />}
+          <Button onClick={this.props.onClickLoadMore} />
           {showModal && (
             <Modal onClose={this.toggleModal}>
               <img src={largeImage} alt="largeImage" width={1100} />
